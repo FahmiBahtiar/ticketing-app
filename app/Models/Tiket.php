@@ -31,4 +31,20 @@ class Tiket extends Model
         return $this->belongsToMany(Order::class, 'detail_orders')
             ->withPivot('jumlah', 'subtotal_harga');
     }
+
+    // Helper methods untuk validasi
+    public function isSoldOut()
+    {
+        return $this->stok == 0;
+    }
+
+    public function isAvailable()
+    {
+        return $this->stok > 0;
+    }
+
+    public function isLowStock($threshold = 5)
+    {
+        return $this->stok > 0 && $this->stok < $threshold;
+    }
 }

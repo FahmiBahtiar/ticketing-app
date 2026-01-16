@@ -37,4 +37,15 @@ class Event extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // Helper methods untuk validasi sold out
+    public function isSoldOut()
+    {
+        return $this->tikets()->sum('stok') == 0;
+    }
+
+    public function getAvailableTicketsCount()
+    {
+        return $this->tikets()->sum('stok');
+    }
 }

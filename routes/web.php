@@ -6,15 +6,23 @@ use App\Http\Controllers\User\HomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\TiketController;
-
+use App\Http\Controllers\User\EventController as UserEventController;
+use App\Http\Controllers\User\OrderController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+// Events
+Route::get('/events/{event}', [UserEventController::class, 'show'])->name('events.show');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Orders
+Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -32,7 +40,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('categories', CategoryController::class);
 
         // Event Management
-        Route::resource('events', EventController::class);
+        Route::resource('events', AdminEventController::class);
 
         // Ticket Management
         Route::resource('tickets', TiketController::class);

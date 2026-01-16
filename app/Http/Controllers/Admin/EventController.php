@@ -97,9 +97,19 @@ class EventController extends Controller
 
             // Handle file upload
             if ($request->hasFile('gambar')) {
+                // Hapus gambar lama jika ada
+                if ($event->gambar && file_exists(public_path('images/events/' . $event->gambar))) {
+                    unlink(public_path('images/events/' . $event->gambar));
+                }
+
+                // Upload gambar baru
                 $imageName = time() . '.' . $request->gambar->extension();
                 $request->gambar->move(public_path('images/events'), $imageName);
                 $validatedData['gambar'] = $imageName;
+            } else {
+                // Jika tidak ada upload baru, hapus field gambar dari validatedData
+                // agar tidak mengoverwrite gambar lama dengan null
+                unset($validatedData['gambar']);
             }
 
             $event->update($validatedData);
@@ -116,6 +126,12 @@ class EventController extends Controller
     public function destroy(string $id)
     {
         $event = Event::findOrFail($id);
+
+        // Hapus gambar jika ada
+        if ($event->gambar && file_exists(public_path('images/events/' . $event->gambar))) {
+            unlink(public_path('images/events/' . $event->gambar));
+        }
+
         $event->delete();
 
         return redirect()->route('admin.events.index')->with('success', 'Event berhasil dihapus.');
